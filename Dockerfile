@@ -18,6 +18,12 @@ COPY --from=gitlab-sonar-scanner /usr/bin/sonar-scanner-run.sh /usr/bin/gitlab-s
 COPY --from=gitlab-sonar-scanner /usr/bin/sonar-scanner /usr/bin/gitlab-sonar-scanner
 
 # Other Tools
-RUN apk --no-cache add curl jq git
+RUN apk --no-cache --update add \
+	curl \
+	g++ \
+	git \
+	jq \
+	make \
+	python3
 
 ENTRYPOINT "/bin/sh"
