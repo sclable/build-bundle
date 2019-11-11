@@ -13,9 +13,9 @@ ENV JAVA_HOME /opt/openjdk-${JAVA_VERSION}
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # GitLab Sonar Scanner
-COPY --from=gitlab-sonar-scanner /usr/lib/sonar-scanner* /usr/lib
+COPY --from=gitlab-sonar-scanner /usr/lib/sonar-scanner-cli-*.jar /usr/lib
+COPY --from=gitlab-sonar-scanner /usr/bin/sonar-scanner /usr/bin/sonar-scanner
 COPY --from=gitlab-sonar-scanner /usr/bin/sonar-scanner-run.sh /usr/bin/gitlab-sonar-scanner
-COPY --from=gitlab-sonar-scanner /usr/bin/sonar-scanner /usr/bin/gitlab-sonar-scanner
 
 # Other Tools
 RUN apk --no-cache --update add \
