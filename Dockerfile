@@ -13,6 +13,7 @@ LABEL org.opencontainers.image.version="0.0.1"
 ARG JAVA_VERSION=11
 ARG NODE_VERSION=13
 ARG SONAR_SCANNER_VERSION=4.2.0.1873
+ARG PHP_VERSION=7.4
 ARG UBUNTU_VERSION
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
@@ -28,6 +29,17 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
 	openjdk-${JAVA_VERSION}-jre-headless \
 	python3 \
 	unzip \
+&& rm -rf /var/lib/apt/lists/*
+
+# PHP
+RUN echo "\
+deb http://ppa.launchpad.net/ondrej/php/ubuntu ${UBUNTU_VERSION} main\n\
+deb-src http://ppa.launchpad.net/ondrej/php/ubuntu ${UBUNTU_VERSION} main\n\
+" > /etc/apt/sources.list.d/ppa-ondrej-php.list
+RUN curl -L "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x14aa40ec0831756756d7f66c4f4ea0aae5267a6c" \
+| apt-key add - \
+&& apt-get update \
+&& DEBIAN_FRONTEND=noninteractive apt-get install -y -q php${PHP_VERSION} \
 && rm -rf /var/lib/apt/lists/*
 
 # NodeJS
