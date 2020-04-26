@@ -8,7 +8,7 @@ LABEL maintainer="Lorenz Leutgeb <lorenz.leutgeb@sclable.com>"
 LABEL org.opencontainers.image.title="Build Bundle"
 LABEL org.opencontainers.image.url="https://git.sclable.com/sclable-platform/devops/kubernetes-cluster.git"
 LABEL org.opencontainers.image.vendor="Sclable Business Solutions GmbH"
-LABEL org.opencontainers.image.version="0.0.1"
+LABEL org.opencontainers.image.version="0.0.2"
 
 ARG JAVA_VERSION=11
 ARG NODE_VERSION=13
@@ -25,6 +25,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
 	gnupg \
 	jq \
 	make \
+    maven \
 	nodejs \
 	openjdk-${JAVA_VERSION}-jre-headless \
 	python3 \
