@@ -1,4 +1,5 @@
-ARG UBUNTU_VERSION=bionic
+# See https://wiki.ubuntu.com/Releases
+ARG UBUNTU_VERSION=focal
 
 FROM ubuntu:${UBUNTU_VERSION} AS ubuntu
 
@@ -10,10 +11,18 @@ LABEL org.opencontainers.image.url="https://git.sclable.com/sclable-platform/dev
 LABEL org.opencontainers.image.vendor="Sclable Business Solutions GmbH"
 LABEL org.opencontainers.image.version="0.0.2"
 
+# See https://jdk.java.net/
 ARG JAVA_VERSION=11
-ARG NODE_VERSION=13
-ARG SONAR_SCANNER_VERSION=4.2.0.1873
+
+# See https://nodejs.org/en/about/releases/
+ARG NODE_VERSION=14
+
+# See https://bintray.com/sonarsource/SonarQube/org.sonarsource.scanner.cli
+ARG SONAR_SCANNER_VERSION=4.3.0.2102
+
+# See https://www.php.net/releases/index.php
 ARG PHP_VERSION=7.4
+
 ARG UBUNTU_VERSION
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
