@@ -26,6 +26,7 @@ ARG PHP_VERSION=7.4
 ARG UBUNTU_VERSION
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
+	autoconf \
 	build-essential \
 	ca-certificates \
 	curl \
