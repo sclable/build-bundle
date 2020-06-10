@@ -34,6 +34,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
 	git \
 	gnupg \
 	jq \
+	libtool \
 	make \
     maven \
 	nodejs \
