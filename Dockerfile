@@ -25,6 +25,8 @@ ARG PHP_VERSION=7.4
 
 ARG UBUNTU_VERSION
 
+ARG DOCKLE_VERSION=0.2.4
+
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
 	autoconf \
 	build-essential \
@@ -77,3 +79,8 @@ RUN \
     ln -s /usr/bin/sonar-scanner-run.sh /usr/bin/gitlab-sonar-scanner
 
 RUN pip3 install --no-cache-dir yq
+
+# Install Dockle
+RUN curl -L -o dockle.deb https://github.com/goodwithtech/dockle/releases/download/v${DOCKLE_VERSION}/dockle_${DOCKLE_VERSION}_Linux-64bit.deb \
+&& dpkg -i dockle.deb \
+&& rm dockle.deb
