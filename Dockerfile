@@ -23,9 +23,13 @@ ARG SONAR_SCANNER_VERSION=4.3.0.2102
 # See https://www.php.net/releases/index.php
 ARG PHP_VERSION=7.4
 
-ARG UBUNTU_VERSION
-
+# See https://github.com/goodwithtech/dockle/releases
 ARG DOCKLE_VERSION=0.2.4
+
+# See https://github.com/hadolint/hadolint/releases
+ARG HADOLINT_VERSION=1.18.0
+
+ARG UBUNTU_VERSION
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
 	autoconf \
@@ -84,3 +88,7 @@ RUN pip3 install --no-cache-dir yq
 RUN curl -L -o dockle.deb https://github.com/goodwithtech/dockle/releases/download/v${DOCKLE_VERSION}/dockle_${DOCKLE_VERSION}_Linux-64bit.deb \
 && dpkg -i dockle.deb \
 && rm dockle.deb
+
+# Install Haskell Dockerfile Linter
+RUN curl -L -o /usr/bin/hadolint https://github.com/hadolint/hadolint/releases/download/v${HADOLINT_VERSION}/hadolint-Linux-x86_64 \
+&& chmod a+x /usr/bin/hadolint
