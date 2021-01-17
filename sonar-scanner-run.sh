@@ -55,30 +55,4 @@ if [ ! -z ${SONAR_BRANCH+x} ]; then
   COMMAND="$COMMAND -Dsonar.branch.name=$SONAR_BRANCH"
 fi
 
-# analysis by default
-if [ -z ${SONAR_ANALYSIS_MODE+x} ]; then
-  SONAR_ANALYSIS_MODE="preview"
-fi
-
-COMMAND="$COMMAND -Dsonar.analysis.mode=$SONAR_ANALYSIS_MODE"
-if [ $SONAR_ANALYSIS_MODE == "preview" ]; then
-  COMMAND="$COMMAND -Dsonar.issuesReport.console.enable=true"
-  COMMAND="$COMMAND -Dsonar.gitlab.failure_notification_mode=exit-code"
-
-  if [ ! -z ${SONAR_GITLAB_PROJECT_ID+x} ]; then
-    COMMAND="$COMMAND -Dsonar.gitlab.project_id=$SONAR_GITLAB_PROJECT_ID"
-  fi
-
-  if [ ! -z ${CI_COMMIT_SHA+x} ]; then
-    COMMAND="$COMMAND -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA"
-  fi
-
-  if [ ! -z ${CI_COMMIT_REF_NAME+x} ]; then
-    COMMAND="$COMMAND -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME"
-  fi
-fi
-if [ $SONAR_ANALYSIS_MODE == "publish" ]; then
-  unset CI_COMMIT_SHA
-fi
-
 $COMMAND $@
