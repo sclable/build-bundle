@@ -1,0 +1,27 @@
+default:
+  tags: [build-cluster, sclable]
+
+variables:
+  IMAGE: eu.gcr.io/devops-155313/devops/build-bundle
+
+stages: [schedule,trigger]
+
+schedule:
+  stage: schedule
+  only: [schedules]
+  image: ${IMAGE}:lts
+  script:
+  - curl https://raw.githubusercontent.com/nodejs/Release/master/schedule.json -o node-releases.json
+  - jq -f schedule.jq node-releases.json > gitlab-ci.yml
+  artifacts:
+    paths: [gitlab-ci.yml, node-releases.json]
+
+trigger:
+  stage: trigger
+  only: [schedules]
+  needs: [schedule]
+  trigger:
+    include:
+    - artifact: gitlab-ci.yml
+      job: schedule
+    strategy: depend
