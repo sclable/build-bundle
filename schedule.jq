@@ -71,4 +71,4 @@ def to_jobs: to_entries
     | join(" "))
   }};
 
-select_alive | add_tags | to_jobs
+$node | select_alive | add_tags | to_jobs
