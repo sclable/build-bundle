@@ -12,5 +12,5 @@ curl "https://api.adoptopenjdk.net/v3/info/available_releases" \
 curl "https://raw.githubusercontent.com/nodejs/Release/master/schedule.json" \
   -o node.json
 
-curl "http://cloud-images.ubuntu.com/releases/streams/v1/com.ubuntu.cloud:released:download.json" \
+curl "https://cloud-images.ubuntu.com/releases/streams/v1/com.ubuntu.cloud:released:download.json" \
   -o ubuntu.json
