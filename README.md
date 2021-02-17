@@ -1,5 +1,25 @@
 # Build Bundle Image
 
+## CI Mechanism
+
+```mermaid
+graph TD
+    subgraph "fetch.sh (Fetches Release and Docker Metadata)"
+    gh[GitHub] -->|curl| json1(dockle.json, hadolint.json, node.json)
+    cc[Canonical] -->|curl| json2(ubuntu.json)
+    gcr[Google Container Registry] -->|curl w/ auth via token.sh| json3(latest.json, lts.json)
+    end
+    json1 --> jq{jq -f schedule.jq ...}
+    json2 --> jq;
+    json3 --> jq;
+    jq --> job1;
+    jq --> job2;
+    subgraph "gitlab-ci.yaml (artifact)"
+    job2["lts (...) generated job"]
+    job1["latest (...) generated job"]
+    end
+```
+
 ## Introduction
 
 Many projects at Sclable build on top of the Node.js stack (often times using
