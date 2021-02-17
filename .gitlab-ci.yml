@@ -11,10 +11,10 @@ schedule:
   only: [schedules]
   image: ${IMAGE}:lts
   script:
-  - curl https://raw.githubusercontent.com/nodejs/Release/master/schedule.json -o node-releases.json
-  - jq -f schedule.jq node-releases.json > gitlab-ci.yml
+  - ./fetch.sh
+  - ./schedule.sh > gitlab-ci.yml
   artifacts:
-    paths: [gitlab-ci.yml, node-releases.json]
+    paths: [gitlab-ci.yml, '*.json']
 
 trigger:
   stage: trigger
