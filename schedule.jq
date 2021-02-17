@@ -128,7 +128,7 @@ def pipeline:
     | join(" ")
   }}) | add;
 
-def noop: {noop: {script: ["true"]}};
+def noop: {noop: {image: env.IMAGE, script: ["true"]}};
 
 def contains_exact(known): . as $x | known | to_entries | map({l: .value, r: $x[.key]}) | map(.l == .r) | all; 
 
