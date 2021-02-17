@@ -100,7 +100,7 @@ def ubuntu_matrix: $ubuntu
 # Combining Jobs
 
 def pipeline:
-  map({ "Build \"\(.tag)\" (Ubuntu \(.ubuntu), Node \(.node), Java \(.java))": {
+  map({ "\(.tag) (Ubuntu \(.ubuntu), Node \(.node), Java \(.java))": {
     cache: {},
     tags: ["build-cluster", "sclable"],
     image: {
