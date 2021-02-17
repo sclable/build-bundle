@@ -1,7 +1,3 @@
-# For Node releases, see:
-# - https://github.com/nodejs/Release#release-schedule
-# - https://nodejs.org/download/release/
-
 def start_of_day: . + "T00:00:00Z" | fromdateiso8601;
 
 # Removes first letter of a string. Versions are
@@ -13,46 +9,87 @@ def prepend_version: "v" + .;
 
 def singleton: [.];
 
+def maximal_by_property(f): (map(f) | max) as $mx
+  | map(select((f) == $mx))
+  | first
+  | singleton;
+
+# Node.js Specific Expressions
+
 # Selects all releases that are "alive", meaning
 # that they have been released (defined by `start`)
 # and that they did not reach end-of-life yet
 # (defined by `end`).
-def select_alive: to_entries
+def node_alive: to_entries
   | map(select(.value.start | start_of_day < now))
   | map(select(.value.end   | start_of_day > now))
   | from_entries;
 
-def select_lts: to_entries
-  | map(select(.value.lts != null))
-  | map(select(.value.lts | start_of_day < now))
-  | from_entries;
-
-def maximal_by_property(f): to_entries
-  | (map(.value | f) | max) as $mx
-  | map(select((.value | f) == $mx))
-  | first
-  | singleton
-  | from_entries;
-
-def latest: maximal_by_property(.start)
+def node_latest: to_entries
+  | maximal_by_property(.value.start)
+  | from_entries
   | keys
   | first
   | extract_version;
 
-def current: latest;
+def node_lts: to_entries
+  | map(select(.value.lts != null))
+  | map(select(.value.lts | start_of_day < now))
+  | from_entries
+  | node_latest;
 
-def lts: select_lts | latest;
+# Ubuntu Specific Expressions
 
-def key_to_tag: to_entries
-  | map(. * {value: {tags: ["node-\(.key)"]}})
+def ubuntu_alive: .products
+  | to_entries
+  | map(select(.value.supported and (.key | contains("amd64"))))
   | from_entries;
 
-def add_tags: key_to_tag
-  | .[lts     | prepend_version].tags += ["lts"]
-  | .[current | prepend_version].tags += ["latest"];
+def ubuntu_lts: to_entries
+  | map(select(.value.aliases | contains("lts")))
+  | from_entries
+  | map(.version)
+  | first;
 
-def to_jobs: to_entries
-  | { "build": {
+def ubuntu_current: to_entries
+  | maximal_by_property(.value.version | tonumber)
+  | from_entries
+  | map(.version)
+  | first;
+
+# GitHub Releases Specific Expressions
+
+def github_latest: .[0].tag_name;
+
+# Spanning Matrices
+
+def java_matrix: $java
+  | {
+    lts: .most_recent_lts,
+    latest: .most_recent_feature_release,
+    all: .available_releases
+  };
+
+def node_matrix: $node
+  | node_alive
+  | {
+    lts: node_lts,
+    latest: node_latest,
+    all: (. | keys | map(extract_version))
+  };
+
+def ubuntu_matrix: $ubuntu
+  | ubuntu_alive
+  | {
+    lts: ubuntu_lts,
+    latest: ubuntu_current,
+    all: . | map(.version)
+  };
+
+# Combining Jobs
+
+def pipeline:
+  map({ "Build \"\(.tag)\" (Ubuntu \(.ubuntu), Node \(.node), Java \(.java))": {
     cache: {},
     tags: ["build-cluster", "sclable"],
     image: {
@@ -60,15 +97,35 @@ def to_jobs: to_entries
       entrypoint: [""]
     },
     stage: "build",
-    script: map([
+    script: ([
         "/kaniko/executor",
         "--context=.",
         "--reproducible",
         "--cache=true",
-        "--build-arg NODE_VERSION=\(.key | extract_version)"
+        "--build-arg DOCKLE_VERSION=\(.dockle)",
+        "--build-arg HADOLINT_VERSION=\(.hadolint)",
+        "--build-arg JAVA_VERSION=\(.java)",
+        "--build-arg NODE_VERSION=\(.node)",
+        "--build-arg UBUNTU_VERSION=\(.ubuntu)"
       ] +
-      (.value.tags | map("--destination \(env.IMAGE):" + .))
-    | join(" "))
-  }};
+      ([
+        .tag,
+        "node-v\(.node)",
+	"java-v\(.java)",
+	"ubuntu-v\(.ubuntu)"
+      ] | map("--destination \(env.IMAGE):" + .)))
+    | join(" ")
+  }}) | add;
 
-$node | select_alive | add_tags | to_jobs
+node_matrix   as $node |
+java_matrix   as $java |
+ubuntu_matrix as $ubuntu |
+{
+  dockle:   ($dockle | github_latest | extract_version),
+  hadolint: ($hadolint | github_latest | extract_version)
+} |
+[
+  . * {java: $java.lts,    node: $node.lts,    ubuntu: $ubuntu.lts,    tag: "lts"   },
+  . * {java: $java.latest, node: $node.latest, ubuntu: $ubuntu.latest, tag: "latest"}
+] |
+pipeline

@@ -1,2 +1,7 @@
 #! /usr/bin/env bash
-jq -n --argfile java java.json --argfile node node.json -f schedule.jq
+jq -S -n -f schedule.jq \
+  --argfile dockle dockle.json \
+  --argfile hadolint hadolint.json \
+  --argfile java java.json \
+  --argfile node node.json \
+  --argfile ubuntu ubuntu.json

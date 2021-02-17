@@ -1,5 +1,5 @@
 # See https://wiki.ubuntu.com/Releases
-ARG UBUNTU_VERSION=focal
+ARG UBUNTU_VERSION
 
 FROM ubuntu:${UBUNTU_VERSION} AS ubuntu
 
@@ -9,13 +9,13 @@ LABEL maintainer="Lorenz Leutgeb <lorenz.leutgeb@sclable.com>"
 LABEL org.opencontainers.image.title="Build Bundle"
 LABEL org.opencontainers.image.url="https://git.sclable.com/sclable-platform/devops/kubernetes-cluster.git"
 LABEL org.opencontainers.image.vendor="Sclable Business Solutions GmbH"
-LABEL org.opencontainers.image.version="0.0.3"
+LABEL org.opencontainers.image.version="0.0.4"
 
 # See https://jdk.java.net/
-ARG JAVA_VERSION=11
+ARG JAVA_VERSION
 
 # See https://nodejs.org/en/about/releases/
-ARG NODE_VERSION=14
+ARG NODE_VERSION
 
 # See https://bintray.com/sonarsource/SonarQube/org.sonarsource.scanner.cli
 ARG SONAR_SCANNER_VERSION=4.3.0.2102
@@ -24,12 +24,10 @@ ARG SONAR_SCANNER_VERSION=4.3.0.2102
 ARG PHP_VERSION=7.4
 
 # See https://github.com/goodwithtech/dockle/releases
-ARG DOCKLE_VERSION=0.2.4
+ARG DOCKLE_VERSION
 
 # See https://github.com/hadolint/hadolint/releases
-ARG HADOLINT_VERSION=1.18.0
-
-ARG UBUNTU_VERSION
+ARG HADOLINT_VERSION
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
 	autoconf \
@@ -42,8 +40,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
 	jq \
 	libtool \
 	make \
-    maven \
-	nodejs \
+	maven \
 	openjdk-${JAVA_VERSION}-jre-headless \
 	python3 \
 	python3-pip \
@@ -51,9 +48,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
 && rm -rf /var/lib/apt/lists/*
 
 # PHP
-RUN echo "\
-deb http://ppa.launchpad.net/ondrej/php/ubuntu ${UBUNTU_VERSION} main\n\
-deb-src http://ppa.launchpad.net/ondrej/php/ubuntu ${UBUNTU_VERSION} main\n\
+RUN . /etc/lsb-release && echo "\
+deb http://ppa.launchpad.net/ondrej/php/ubuntu ${DISTRIB_CODENAME} main\n\
+deb-src http://ppa.launchpad.net/ondrej/php/ubuntu ${DISTRIB_CODENAME} main\n\
 " > /etc/apt/sources.list.d/ppa-ondrej-php.list
 RUN curl -L "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x14aa40ec0831756756d7f66c4f4ea0aae5267a6c" \
 | apt-key add - \
@@ -62,9 +59,9 @@ RUN curl -L "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x14aa40ec083
 && rm -rf /var/lib/apt/lists/*
 
 # NodeJS
-RUN echo "\
-deb https://deb.nodesource.com/node_${NODE_VERSION}.x ${UBUNTU_VERSION} main\n\
-deb-src https://deb.nodesource.com/node_${NODE_VERSION}.x ${UBUNTU_VERSION} main\n\
+RUN . /etc/lsb-release && echo "\
+deb https://deb.nodesource.com/node_${NODE_VERSION}.x ${DISTRIB_CODENAME} main\n\
+deb-src https://deb.nodesource.com/node_${NODE_VERSION}.x ${DISTRIB_CODENAME} main\n\
 " > /etc/apt/sources.list.d/nodesource.list
 RUN curl -L https://deb.nodesource.com/gpgkey/nodesource.gpg.key nodesource.gpg.key \
 | apt-key add - \
