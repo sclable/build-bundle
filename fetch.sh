@@ -14,3 +14,7 @@ curl "https://raw.githubusercontent.com/nodejs/Release/master/schedule.json" \
 
 curl "https://cloud-images.ubuntu.com/releases/streams/v1/com.ubuntu.cloud:released:download.json" \
   -o ubuntu.json
+
+./docker-metadata.sh $IMAGE:latest > latest.json
+
+./docker-metadata.sh $IMAGE:lts > lts.json

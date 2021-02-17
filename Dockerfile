@@ -1,7 +1,14 @@
 # See https://wiki.ubuntu.com/Releases
 ARG UBUNTU_VERSION
-
 FROM ubuntu:${UBUNTU_VERSION} AS ubuntu
+
+ARG DOCKLE_VERSION
+ARG HADOLINT_VERSION
+ARG JAVA_VERSION
+ARG NODE_VERSION
+
+ARG SONAR_SCANNER_VERSION=4.3.0.2102
+ARG PHP_VERSION=7.4
 
 LABEL maintainer="Lorenz Leutgeb <lorenz.leutgeb@sclable.com>"
 
@@ -11,25 +18,17 @@ LABEL org.opencontainers.image.url="https://git.sclable.com/sclable-platform/dev
 LABEL org.opencontainers.image.vendor="Sclable Business Solutions GmbH"
 LABEL org.opencontainers.image.version="0.0.4"
 
-# See https://jdk.java.net/
-ARG JAVA_VERSION
+# Copy arguments to labels, so that we can externally check which
+# versions this image contains.
+LABEL com.sclable.dependency.dockle=$DOCKLE_VERSION
+LABEL com.sclable.dependency.java=$JAVA_VERSION
+LABEL com.sclable.dependency.hadolint=$HADOLINT_VERSION
+LABEL com.sclable.dependency.node=$NODE_VERSION
+LABEL com.sclable.dependency.ubuntu=$UBUNTU_VERSION
 
-# See https://nodejs.org/en/about/releases/
-ARG NODE_VERSION
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# See https://bintray.com/sonarsource/SonarQube/org.sonarsource.scanner.cli
-ARG SONAR_SCANNER_VERSION=4.3.0.2102
-
-# See https://www.php.net/releases/index.php
-ARG PHP_VERSION=7.4
-
-# See https://github.com/goodwithtech/dockle/releases
-ARG DOCKLE_VERSION
-
-# See https://github.com/hadolint/hadolint/releases
-ARG HADOLINT_VERSION
-
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends \
 	autoconf \
 	build-essential \
 	ca-certificates \
@@ -55,7 +54,7 @@ deb-src http://ppa.launchpad.net/ondrej/php/ubuntu ${DISTRIB_CODENAME} main\n\
 RUN curl -L "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x14aa40ec0831756756d7f66c4f4ea0aae5267a6c" \
 | apt-key add - \
 && apt-get update \
-&& DEBIAN_FRONTEND=noninteractive apt-get install -y -q php${PHP_VERSION} \
+&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends php${PHP_VERSION} \
 && rm -rf /var/lib/apt/lists/*
 
 # NodeJS
@@ -63,21 +62,21 @@ RUN . /etc/lsb-release && echo "\
 deb https://deb.nodesource.com/node_${NODE_VERSION}.x ${DISTRIB_CODENAME} main\n\
 deb-src https://deb.nodesource.com/node_${NODE_VERSION}.x ${DISTRIB_CODENAME} main\n\
 " > /etc/apt/sources.list.d/nodesource.list
-RUN curl -L https://deb.nodesource.com/gpgkey/nodesource.gpg.key nodesource.gpg.key \
+RUN curl -L https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
 | apt-key add - \
 && apt-get update \
-&& DEBIAN_FRONTEND=noninteractive apt-get install -y -q nodejs \
+&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends nodejs \
 && rm -rf /var/lib/apt/lists/*
 
 # GitLab Sonar Scanner
 COPY sonar-scanner-run.sh /usr/bin
-ADD https://dl.bintray.com/sonarsource/SonarQube/org/sonarsource/scanner/cli/sonar-scanner-cli/${SONAR_SCANNER_VERSION}/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip /tmp/sonar-scanner.zip
-RUN \
-    unzip /tmp/sonar-scanner.zip -d /tmp && \
-    mv -fv /tmp/sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner /usr/bin && \
-    mv -fv /tmp/sonar-scanner-${SONAR_SCANNER_VERSION}/lib/* /usr/lib && \
-    ls -lha /usr/bin/sonar* && \
-    ln -s /usr/bin/sonar-scanner-run.sh /usr/bin/gitlab-sonar-scanner
+RUN curl -L -o sonar-scanner.zip https://dl.bintray.com/sonarsource/SonarQube/org/sonarsource/scanner/cli/sonar-scanner-cli/${SONAR_SCANNER_VERSION}/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip \
+&& unzip sonar-scanner.zip \
+&& mv -fv sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner /usr/bin \
+&& mv -fv sonar-scanner-${SONAR_SCANNER_VERSION}/lib/* /usr/lib \
+&& ls -lha /usr/bin/sonar* \
+&& ln -s /usr/bin/sonar-scanner-run.sh /usr/bin/gitlab-sonar-scanner \
+&& rm sonar-scanner.zip
 
 RUN pip3 install --no-cache-dir yq
 
@@ -89,3 +88,5 @@ RUN curl -L -o dockle.deb https://github.com/goodwithtech/dockle/releases/downlo
 # Install Haskell Dockerfile Linter
 RUN curl -L -o /usr/bin/hadolint https://github.com/hadolint/hadolint/releases/download/v${HADOLINT_VERSION}/hadolint-Linux-x86_64 \
 && chmod a+x /usr/bin/hadolint
+
+USER 1000

@@ -14,6 +14,9 @@ def maximal_by_property(f): (map(f) | max) as $mx
   | first
   | singleton;
 
+def pick(entries): . as $target
+  | (entries | map({"\(.key)": $target[.value]}) | add);
+
 # Node.js Specific Expressions
 
 # Selects all releases that are "alive", meaning
@@ -61,12 +64,20 @@ def ubuntu_current: to_entries
 
 def github_latest: .[0].tag_name;
 
+# Docker Specific Expressions
+
+def pick_versions(names): . | pick(names | map({value: "com.sclable.dependency.\(.)", key: .}));
+
+def pick_all_versions: pick_versions(["dockle", "hadolint", "java", "node", "ubuntu"]);
+
+def labels: .config.Labels;
+
 # Spanning Matrices
 
 def java_matrix: $java
   | {
-    lts: .most_recent_lts,
-    latest: .most_recent_feature_release,
+    lts: .most_recent_lts | tostring,
+    latest: .most_recent_feature_release | tostring,
     all: .available_releases
   };
 
@@ -117,15 +128,20 @@ def pipeline:
     | join(" ")
   }}) | add;
 
-node_matrix   as $node |
-java_matrix   as $java |
-ubuntu_matrix as $ubuntu |
-{
-  dockle:   ($dockle | github_latest | extract_version),
+def update_or_null(known): if contains(known) then null else . end;
+
+  ($latest | labels | pick_all_versions) as $latest
+| ($lts    | labels | pick_all_versions) as $lts
+|   node_matrix as $node
+|   java_matrix as $java
+| ubuntu_matrix as $ubuntu
+| {
+  dockle:   ($dockle   | github_latest | extract_version),
   hadolint: ($hadolint | github_latest | extract_version)
-} |
-[
-  . * {java: $java.lts,    node: $node.lts,    ubuntu: $ubuntu.lts,    tag: "lts"   },
-  . * {java: $java.latest, node: $node.latest, ubuntu: $ubuntu.latest, tag: "latest"}
-] |
-pipeline
+}
+| [
+  . * {java: $java.lts,    node: $node.lts,    ubuntu: $ubuntu.lts,    tag: "lts"   } | update_or_null($lts),
+  . * {java: $java.latest, node: $node.latest, ubuntu: $ubuntu.latest, tag: "latest"} | update_or_null($latest)
+]
+| map(select(. != null))
+| pipeline

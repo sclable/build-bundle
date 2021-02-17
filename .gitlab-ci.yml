@@ -4,7 +4,14 @@ default:
 variables:
   IMAGE: eu.gcr.io/devops-155313/devops/build-bundle
 
-stages: [schedule,trigger]
+stages: [lint, schedule, trigger]
+
+lint:
+  stage: lint
+  image: ${IMAGE}:lts
+  script:
+  - hadolint Dockerfile
+  - 
 
 schedule:
   stage: schedule
