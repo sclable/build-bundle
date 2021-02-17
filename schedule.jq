@@ -128,7 +128,9 @@ def pipeline:
     | join(" ")
   }}) | add;
 
-def update_or_null(known): if contains(known) then null else . end;
+def contains_exact(known): . as $x | known | to_entries | map({l: .value, r: $x[.key]}) | map(.l == .r) | all; 
+
+def update_or_null(known): if contains_exact(known) then null else . end;
 
   ($latest | labels | pick_all_versions) as $latest
 | ($lts    | labels | pick_all_versions) as $lts
@@ -144,4 +146,4 @@ def update_or_null(known): if contains(known) then null else . end;
   . * {java: $java.latest, node: $node.latest, ubuntu: $ubuntu.latest, tag: "latest"} | update_or_null($latest)
 ]
 | map(select(. != null))
-| pipeline
+| if length == 0 then {} else pipeline end
