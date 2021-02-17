@@ -73,7 +73,7 @@ the Docker image to use via the [`image`][gitlab-ci-image] configuration key.
 ## Changing the Build Bundle
 
 The [`Dockerfile`][bb-dockerfile] for the build bundle is contained in [the
-repository `sclable-platform/devops/kubernetes-cluster`][kub]. Merge requests
+repository `sclable-platform/devops/build-bundle`][repo]. Merge requests
 are welcome.
 
 ## Risks
@@ -91,6 +91,6 @@ cover different kinds of projects.
 
 [bb-dockerfile]: https://git.sclable.com/sclable-platform/devops/kubernetes-cluster/blob/master/build/build-bundle/Dockerfile
 [gitlab-ci-image]: https://docs.gitlab.com/ee/ci/yaml/#image
-[kub]: https://git.sclable.com/sclable-platform/devops/kubernetes-cluster/tree/master
+[repo]: https://git.sclable.com/sclable-platform/devops/build-bundle/tree/master
 [node-releases]: https://git.sclable.com/sclable-platform/devops/kubernetes-cluster/tree/master
 [ciricihq-sonar-scanner]: https://github.com/ciricihq/gitlab-sonar-scanner/blob/b8bcc643df250ff69900719730af91966fa8a241/sonar-scanner-run.sh
