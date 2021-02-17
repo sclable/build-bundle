@@ -6,13 +6,6 @@ variables:
 
 stages: [lint, schedule, trigger]
 
-lint:
-  stage: lint
-  image: ${IMAGE}:lts
-  script:
-  - hadolint Dockerfile
-  - 
-
 schedule:
   stage: schedule
   only: [schedules]
