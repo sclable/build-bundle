@@ -14,6 +14,7 @@ schedule:
   - ./fetch.sh
   - ./schedule.sh > gitlab-ci.yml
   artifacts:
+    when: always
     paths: [gitlab-ci.yml, '*.json']
 
 trigger:
