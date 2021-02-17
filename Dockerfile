@@ -8,14 +8,14 @@ ARG HADOLINT_VERSION
 ARG JAVA_VERSION
 ARG NODE_VERSION
 
-ARG SONAR_SCANNER_VERSION=4.3.0.2102
-ARG PHP_VERSION=7.4
+ARG SONAR_SCANNER_VERSION=4.6.0.2311
+ARG PHP_VERSION=8.0
 
 LABEL maintainer="Lorenz Leutgeb <lorenz.leutgeb@sclable.com>"
 
 # See https://github.com/opencontainers/image-spec/blob/775207bd45b6cb8153ce218cc59351799217451f/annotations.md
 LABEL org.opencontainers.image.title="Build Bundle"
-LABEL org.opencontainers.image.url="https://git.sclable.com/sclable-platform/devops/kubernetes-cluster.git"
+LABEL org.opencontainers.image.url="https://git.sclable.com/sclable-platform/devops/build-bundle.git"
 LABEL org.opencontainers.image.vendor="Sclable Business Solutions GmbH"
 LABEL org.opencontainers.image.version="0.0.4"
 

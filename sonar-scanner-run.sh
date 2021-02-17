@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 
 if [ -z ${SONAR_URL+x} ]; then
   echo "Undefined \"SONAR_URL\" env" && exit 1
