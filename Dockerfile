@@ -39,6 +39,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-
 	gnupg \
 	jq \
 	libtool \
+	lsb-release \
 	make \
 	maven \
 	openjdk-${JAVA_VERSION}-jre-headless \
@@ -90,5 +91,8 @@ RUN curl -L -o dockle.deb https://github.com/goodwithtech/dockle/releases/downlo
 # Install Haskell Dockerfile Linter
 RUN curl -L -o /usr/bin/hadolint https://github.com/hadolint/hadolint/releases/download/v${HADOLINT_VERSION}/hadolint-Linux-x86_64 \
 && chmod a+x /usr/bin/hadolint
+
+# Smoke Test
+RUN dockle -v && hadolint -v && java -version && node -v && npm -v && php -v && lsb_release -a
 
 USER 1000
