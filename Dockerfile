@@ -48,7 +48,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-
 && rm -rf /var/lib/apt/lists/*
 
 # PHP
-RUN . /etc/lsb-release && echo "\
+RUN . /etc/lsb-release && echo -e "\
 deb http://ppa.launchpad.net/ondrej/php/ubuntu ${DISTRIB_CODENAME} main\n\
 deb-src http://ppa.launchpad.net/ondrej/php/ubuntu ${DISTRIB_CODENAME} main\n\
 " > /etc/apt/sources.list.d/ppa-ondrej-php.list
@@ -59,14 +59,15 @@ RUN curl -L "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x14aa40ec083
 && rm -rf /var/lib/apt/lists/*
 
 # NodeJS
-RUN . /etc/lsb-release && echo "\
+RUN . /etc/lsb-release && echo -e "\
 deb https://deb.nodesource.com/node_${NODE_VERSION}.x ${DISTRIB_CODENAME} main\n\
 deb-src https://deb.nodesource.com/node_${NODE_VERSION}.x ${DISTRIB_CODENAME} main\n\
 " > /etc/apt/sources.list.d/nodesource.list
+
 RUN curl -L https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
 | apt-key add - \
 && apt-get update \
-&& DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs \
+&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends nodejs \
 && rm -rf /var/lib/apt/lists/*
 
 # GitLab Sonar Scanner
