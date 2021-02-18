@@ -11,6 +11,8 @@ ARG NODE_VERSION
 ARG SONAR_SCANNER_VERSION=4.6.0.2311
 ARG PHP_VERSION=7.4
 
+ARG SELF
+
 LABEL maintainer="Lorenz Leutgeb <lorenz.leutgeb@sclable.com>"
 
 # See https://github.com/opencontainers/image-spec/blob/775207bd45b6cb8153ce218cc59351799217451f/annotations.md
@@ -26,6 +28,7 @@ LABEL com.sclable.dependency.java=$JAVA_VERSION
 LABEL com.sclable.dependency.hadolint=$HADOLINT_VERSION
 LABEL com.sclable.dependency.node=$NODE_VERSION
 LABEL com.sclable.dependency.ubuntu=$UBUNTU_VERSION
+LABEL com.sclable.dependency.self=$SELF
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -46,6 +49,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-
 	python3 \
 	python3-pip \
 	unzip \
+	xxhash \
 && rm -rf /var/lib/apt/lists/*
 
 # PHP

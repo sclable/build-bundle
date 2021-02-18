@@ -68,7 +68,7 @@ def github_latest: .[0].tag_name;
 
 def pick_versions(names): . | pick(names | map({value: "com.sclable.dependency.\(.)", key: .}));
 
-def pick_all_versions: pick_versions(["dockle", "hadolint", "java", "node", "ubuntu"]);
+def pick_all_versions: pick_versions(["dockle", "hadolint", "java", "node", "ubuntu", "self"]);
 
 def labels: .config.Labels;
 
@@ -117,7 +117,8 @@ def pipeline:
         "--build-arg HADOLINT_VERSION=\(.hadolint)",
         "--build-arg JAVA_VERSION=\(.java)",
         "--build-arg NODE_VERSION=\(.node)",
-        "--build-arg UBUNTU_VERSION=\(.ubuntu)"
+        "--build-arg UBUNTU_VERSION=\(.ubuntu)",
+        "--build-arg SELF=\(.self)"
       ] +
       ([
         .tag,
@@ -141,7 +142,8 @@ def update_or_null(known): if contains_exact(known) then null else . end;
 | ubuntu_matrix as $ubuntu
 | {
   dockle:   ($dockle   | github_latest | extract_version),
-  hadolint: ($hadolint | github_latest | extract_version)
+  hadolint: ($hadolint | github_latest | extract_version),
+  self:     $self
 }
 | [
   . * {java: $java.lts,    node: $node.lts,    ubuntu: $ubuntu.lts,    tag: "lts"   } | update_or_null($lts),
