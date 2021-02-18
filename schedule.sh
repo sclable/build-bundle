@@ -77,7 +77,7 @@ metadata $IMAGE:lts
 # Must be maintained manually!
 SELF_FILES="Dockerfile sonar-scanner-run.sh"
 SELF=$(\
-git ls-tree -r master $SELF_FILES \
+git ls-tree HEAD $SELF_FILES \
   | sha256sum \
   | cut -d' ' -f 1 \
 )
