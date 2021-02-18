@@ -66,7 +66,7 @@ deb-src https://deb.nodesource.com/node_${NODE_VERSION}.x ${DISTRIB_CODENAME} ma
 RUN curl -L https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
 | apt-key add - \
 && apt-get update \
-&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends nodejs \
+&& DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs \
 && rm -rf /var/lib/apt/lists/*
 
 # GitLab Sonar Scanner
