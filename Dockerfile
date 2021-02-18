@@ -9,7 +9,7 @@ ARG JAVA_VERSION
 ARG NODE_VERSION
 
 ARG SONAR_SCANNER_VERSION=4.6.0.2311
-ARG PHP_VERSION=8.0
+ARG PHP_VERSION=7.4
 
 LABEL maintainer="Lorenz Leutgeb <lorenz.leutgeb@sclable.com>"
 
