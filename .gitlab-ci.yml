@@ -1,15 +1,13 @@
-default:
-  tags: [build-cluster, sclable]
-
 variables:
   IMAGE: eu.gcr.io/devops-155313/devops/build-bundle
 
-stages: [lint, schedule, trigger]
+stages: [schedule, trigger]
 
 schedule:
   stage: schedule
   only: [schedules]
   image: ${IMAGE}:lts
+  tags: [x-small]
   script:
   - ./schedule.sh > gitlab-ci.yml
   artifacts:

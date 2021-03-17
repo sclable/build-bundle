@@ -102,7 +102,7 @@ def ubuntu_matrix: $ubuntu
 def pipeline:
   map({ "\(.tag) (Ubuntu \(.ubuntu), Node \(.node), Java \(.java))": {
     cache: {},
-    tags: ["build-cluster", "sclable"],
+    tags: ["medium"],
     image: {
       name: "gcr.io/kaniko-project/executor:debug",
       entrypoint: [""]
