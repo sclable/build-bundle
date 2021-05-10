@@ -3,7 +3,7 @@
 COMMAND="sonar-scanner"
 
 if [ -z ${SONAR_URL+x} ]; then
-  echo "WARNING: \"SONAR_URL\" is not defined. This will cause failure, if sonar.host.url is not specified elsewhere (e.g. es additional argument, or in a *.properties file)."
+  echo "WARNING: \"SONAR_URL\" is not defined. This will cause failure, if sonar.host.url is not specified elsewhere (e.g. as additional argument, or in a *.properties file)."
 else
   COMMAND="$COMMAND -Dsonar.host.url=$SONAR_URL"
 fi
