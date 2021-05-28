@@ -1,12 +1,12 @@
 #! /bin/sh
 
+COMMAND="sonar-scanner"
+
 if [ -z ${SONAR_URL+x} ]; then
-  echo "Undefined \"SONAR_URL\" env" && exit 1
+  echo "WARNING: \"SONAR_URL\" is not defined. This will cause failure, if sonar.host.url is not specified elsewhere (e.g. as additional argument, or in a *.properties file)."
+else
+  COMMAND="$COMMAND -Dsonar.host.url=$SONAR_URL"
 fi
-
-URL=$SONAR_URL
-
-COMMAND="sonar-scanner -Dsonar.host.url=$URL"
 
 if ! grep -q sonar.projectKey "sonar-project.properties"; then
   if [ -z ${SONAR_PROJECT_KEY+x} ]; then
