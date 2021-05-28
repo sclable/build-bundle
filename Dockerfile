@@ -48,6 +48,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-
 	openjdk-${JAVA_VERSION}-jre-headless \
 	python3 \
 	python3-pip \
+  ssh \
 	unzip \
 	xxhash \
 && rm -rf /var/lib/apt/lists/*
