@@ -100,4 +100,5 @@ RUN curl -L -o /usr/bin/hadolint https://github.com/hadolint/hadolint/releases/d
 # Smoke Test
 RUN dockle -v && hadolint -v && java -version && node -v && npm -v && php -v && lsb_release -a
 
-USER 1000
+useradd -mUs /usr/bin/bash -u 1000 builder
+USER builder
