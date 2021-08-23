@@ -13,7 +13,7 @@ ARG PHP_VERSION=7.4
 
 ARG SELF
 
-LABEL maintainer="Lorenz Leutgeb <lorenz.leutgeb@sclable.com>"
+LABEL maintainer="Andreas Leibetseder <andreas.leibetseder@sclable.com>"
 
 # See https://github.com/opencontainers/image-spec/blob/775207bd45b6cb8153ce218cc59351799217451f/annotations.md
 LABEL org.opencontainers.image.title="Build Bundle"
@@ -78,7 +78,7 @@ RUN curl -L https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
 
 # GitLab Sonar Scanner
 COPY sonar-scanner-run.sh /usr/bin
-RUN curl -L -o sonar-scanner.zip https://dl.bintray.com/sonarsource/SonarQube/org/sonarsource/scanner/cli/sonar-scanner-cli/${SONAR_SCANNER_VERSION}/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip \
+RUN curl -L -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip \
 && unzip sonar-scanner.zip \
 && mv -fv sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner /usr/bin \
 && mv -fv sonar-scanner-${SONAR_SCANNER_VERSION}/lib/* /usr/lib \
