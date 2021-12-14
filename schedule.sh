@@ -5,7 +5,9 @@ function token() {
   if [ ! -v GOOGLE_TOKEN ]
   then 
     URL=http://metadata.google.internal./computeMetadata/v1/instance/service-accounts/default/token 
+    set +eo pipefail # Allow authentication to fail.
     GOOGLE_TOKEN=$(curl -s -L -H 'Metadata-Flavor: Google' $URL | jq -r '.access_token' || gcloud auth print-access-token)
+    set -eo pipefail
   fi
   echo $GOOGLE_TOKEN
 }
@@ -28,6 +30,12 @@ function metadata() {
   if [ -e $TARGET ]
   then
     echo "$TARGET exists. Not fetching metadata." >&2
+    return
+  fi
+  TOKEN=$(token)
+  if [ "$TOKEN" = "" ]
+  then
+    echo "{}" > $TARGET
     return
   fi
   DIGEST=$( \
@@ -82,7 +90,17 @@ git ls-tree HEAD $SELF_FILES \
   | cut -d' ' -f 1 \
 )
 
-jq -S -n -f schedule.jq \
+set +u
+if [ "$GITLAB_CI" = "true" ]
+then
+	FILTER="gitlab"
+elif [ "$GITHUB_ACTIONS" = "true" ]
+then
+	FILTER="github"
+fi
+set -u
+
+jq -S -n -r -f ${FILTER}.jq \
   --arg self "$SELF" \
   --argfile dockle dockle.json \
   --argfile hadolint hadolint.json \
