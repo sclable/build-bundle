@@ -1,0 +1,36 @@
+name: schedule
+
+on:
+  push:
+    branches:
+      - master
+      - gh-actions
+  schedule:
+    - cron:  '0 3 * * *'
+
+jobs:
+  schedule:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - id: lts
+      run: IMAGE=undefined ./schedule.sh lts
+    outputs:
+      dockle: ${{ steps.lts.outputs.dockle }}
+      hadolint: ${{ steps.lts.outputs.hadolint }}
+      java: ${{ steps.lts.outputs.java }}
+      node: ${{ steps.lts.outputs.node }}
+      ubuntu: ${{ steps.lts.outputs.ubuntu }}
+      self: ${{ steps.lts.outputs.self }}
+      tag: ${{ steps.lts.outputs.tag }}
+  trigger:
+    needs: schedule
+    uses: sclable/build-bundle/.github/workflows/trigger.yml@gh-actions
+    with:
+      dockle: ${{ needs.schedule.outputs.dockle }}
+      hadolint: ${{ needs.schedule.outputs.hadolint }}
+      java: ${{ needs.schedule.outputs.java }}
+      node: ${{ needs.schedule.outputs.node }}
+      ubuntu: ${{ needs.schedule.outputs.ubuntu }}
+      self: ${{ needs.schedule.outputs.self }}
+      tag: ${{ needs.schedule.outputs.tag }}
